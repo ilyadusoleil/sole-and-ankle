@@ -26,10 +26,12 @@ const ShoeCard = ({
   // will triumph and be the variant used.
   // prettier-ignore
   const variant = typeof salePrice === 'number'
-    ? 'on-sale'
+    ? 'Sale'
     : isNewShoe(releaseDate)
-      ? 'new-release'
+      ? 'Just Released'
       : 'default'
+
+  const isShowFlag = variant !== 'default'
 
   return (
     <Link href={`/shoe/${slug}`}>
@@ -37,13 +39,15 @@ const ShoeCard = ({
         <ImageWrapper>
           <Image alt="" src={imageSrc} />
         </ImageWrapper>
+        {isShowFlag && <Flag type={variant}>{variant}</Flag>}
         <Spacer size={12} />
         <Row>
           <Name>{name}</Name>
-          <Price>{formatPrice(price)}</Price>
+          <Price type={variant}>{formatPrice(price)}</Price>
         </Row>
         <Row>
           <ColorInfo>{pluralize('Color', numOfColors)}</ColorInfo>
+          {variant === 'Sale' && <SalePrice>${salePrice/100}</SalePrice>}
         </Row>
       </Wrapper>
     </Link>
@@ -53,17 +57,28 @@ const ShoeCard = ({
 const Link = styled.a`
   text-decoration: none;
   color: inherit;
+
+  flex: 1 1 300px;
 `;
 
-const Wrapper = styled.article``;
+const Wrapper = styled.article`
+position: relative;
+`;
 
 const ImageWrapper = styled.div`
   position: relative;
+
+  
 `;
 
-const Image = styled.img``;
+const Image = styled.img`
+  max-width: 100%;
+`;
 
 const Row = styled.div`
+  display: flex;
+  justify-content: space-between;
+
   font-size: 1rem;
 `;
 
@@ -72,7 +87,9 @@ const Name = styled.h3`
   color: ${COLORS.gray[900]};
 `;
 
-const Price = styled.span``;
+const Price = styled.span`
+  ${props => props.type === 'Sale' && 'text-decoration: line-through;'}
+`;
 
 const ColorInfo = styled.p`
   color: ${COLORS.gray[700]};
@@ -82,5 +99,16 @@ const SalePrice = styled.span`
   font-weight: ${WEIGHTS.medium};
   color: ${COLORS.primary};
 `;
+
+const Flag = styled.div`
+  background-color: ${props => props.type === 'Sale' ? COLORS.primary : COLORS.secondary};
+  color: white;
+  padding: 9px;
+
+  position: absolute;
+  top: 15px;
+  right: -5px;
+`;
+
 
 export default ShoeCard;
